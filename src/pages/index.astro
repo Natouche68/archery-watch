@@ -1,12 +1,12 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/home.css';
 ---
 
-<html lang='fr'>
-	<head>
-		<meta charset='utf-8' />
-		<meta name='viewport' content='width=device-width' />
-		<meta name='generator' content={Astro.generator} />
-		<title>Archery Watch</title>
-	</head>
-	<body> Hello World !</body>
-</html>
+<BaseLayout>
+	<div class='home'>
+		<div class='title'>Archery Watch</div>
+		<a href='/' class='button'>Chronomètre</a>
+		<a href='/' class='button'>Télécommande</a>
+	</div>
+</BaseLayout>
