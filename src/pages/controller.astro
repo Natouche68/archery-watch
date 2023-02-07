@@ -3,4 +3,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/controller.css';
 ---
 
-<BaseLayout>Télécommande</BaseLayout>
+<BaseLayout>
+	<h1>Télécommande</h1>
+</BaseLayout>
+
+<script>
+	import { io } from 'socket.io-client';
+
+	const socket = io(import.meta.env.PUBLIC_WEBSOCKET_SERVER);
+
+	socket.emit('controller-connected', 'stopwatch-1234');
+</script>
