@@ -5,12 +5,67 @@ import '../styles/controller.css';
 
 <BaseLayout>
 	<h1>Télécommande</h1>
+	<form id='start-stopwatch'>
+		<div>
+			<input type='checkbox' id='two-waves' />
+			<label for='two-waves'>Deux vagues (AB/CD) ?</label>
+		</div>
+		<div>
+			<label for='time'>Temps</label>
+			<input type='number' id='time' step='10' min='10' required />
+		</div>
+		<button id='start-stopwatch-button'>Commencer le chronomètre</button>
+	</form>
+	<button id='stop-stopwatch'>Stopper le chronomètre</button>
 </BaseLayout>
 
 <script>
 	import { io } from 'socket.io-client';
 
-	const socket = io(import.meta.env.PUBLIC_WEBSOCKET_SERVER);
+	const startStopwatchForm = document.getElementById('start-stopwatch') as HTMLFormElement;
+	const stopStopwatchButton = document.getElementById('stop-stopwatch') as HTMLButtonElement;
 
-	socket.emit('controller-connected', 'stopwatch-1234');
+	const startStopwatchButton = document.getElementById(
+		'start-stopwatch-button'
+	) as HTMLButtonElement;
+
+	const twoWavesInput = document.getElementById('two-waves') as HTMLInputElement;
+	const timeInput = document.getElementById('time') as HTMLInputElement;
+
+	const socket = io(import.meta.env.PUBLIC_WEBSOCKET_SERVER);
+	const stopwatchId = 'stopwatch-1234';
+
+	stopStopwatchButton.hidden = true;
+
+	socket.emit('controller-connected', stopwatchId);
+
+	startStopwatchForm.addEventListener('submit', (event) => {
+		event.preventDefault();
+		socket.emit('start-stopwatch', stopwatchId, twoWavesInput.checked, timeInput.value);
+		startStopwatchButton.disabled = true;
+	});
+
+	socket.on('stopwatch-started', (startingStopwatchId) => {
+		if (startingStopwatchId === stopwatchId) {
+			startStopwatchButton.disabled = false;
+			startStopwatchForm.hidden = true;
+			stopStopwatchButton.hidden = false;
+		}
+	});
+
+	stopStopwatchButton.addEventListener('click', () => {
+		socket.emit('stop-stopwatch', stopwatchId);
+		stopStopwatchButton.disabled = true;
+	});
+
+	socket.on('stopwatch-stopped', (stoppingStopwatchId, waveTwoRunning) => {
+		if (stoppingStopwatchId === stopwatchId) {
+			stopStopwatchButton.disabled = false;
+
+			if (!waveTwoRunning) {
+				stopStopwatchButton.hidden = true;
+				startStopwatchForm.hidden = false;
+			}
+		}
+	});
 </script>
