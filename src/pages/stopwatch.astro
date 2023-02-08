@@ -3,4 +3,44 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/stopwatch.css';
 ---
 
-<BaseLayout>Chronomètre</BaseLayout>
+<BaseLayout>
+	<h1>Chronomètre</h1>
+	<div id='time'>---</div>
+	<div id='wave'>---</div>
+</BaseLayout>
+
+<script>
+	import { io } from 'socket.io-client';
+
+	const waveDiv = document.getElementById('wave') as HTMLDivElement;
+	const timeDiv = document.getElementById('time') as HTMLDivElement;
+
+	const socket = io(import.meta.env.PUBLIC_WEBSOCKET_SERVER);
+	const stopwatchId = 'stopwatch-1234'; // PLACEHOLDER
+	let isTwoWaves = false;
+
+	socket.emit('stopwatch-connected');
+
+	socket.on('start-stopwatch', (startingStopwatchId, twoWaves, time) => {
+		if (startingStopwatchId === stopwatchId) {
+			waveDiv.innerText = twoWaves ? 'AB' : '-';
+			timeDiv.innerText = time;
+			isTwoWaves = twoWaves;
+			socket.emit('stopwatch-started', stopwatchId);
+		}
+	});
+
+	socket.on('stop-stopwatch', (stoppingStopwatchId) => {
+		if (stoppingStopwatchId === stopwatchId) {
+			if (isTwoWaves) {
+				waveDiv.innerText = 'CD';
+				socket.emit('stopwatch-stopped', stopwatchId, true);
+				isTwoWaves = false;
+			} else {
+				waveDiv.innerText = '---';
+				timeDiv.innerText = '---';
+				socket.emit('stopwatch-stopped', stopwatchId, false);
+			}
+		}
+	});
+</script>
