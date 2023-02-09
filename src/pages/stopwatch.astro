@@ -12,6 +12,27 @@ import '../styles/stopwatch.css';
 <script>
 	import { io } from 'socket.io-client';
 
+	function startStopwatch(time: number, twoWaves: boolean) {
+		waveDiv.innerText = twoWaves ? 'AB' : '-';
+		isTwoWaves = twoWaves;
+
+		countdownTime = time;
+		countdown('time', countdownTime);
+	}
+
+	function stopStopwatch() {
+		if (isTwoWaves) {
+			startStopwatch(countdownTime, false);
+			waveDiv.innerText = 'CD';
+			socket.emit('stopwatch-stopped', stopwatchId, true);
+		} else {
+			clearInterval(intervalID);
+			waveDiv.innerText = '---';
+			timeDiv.innerText = '---';
+			socket.emit('stopwatch-stopped', stopwatchId, false);
+		}
+	}
+
 	function countdown(id: string, start: number) {
 		clearInterval(intervalID);
 
@@ -23,7 +44,7 @@ import '../styles/stopwatch.css';
 			count -= 1;
 			counter.innerText = String(count);
 			if (count === 0) {
-				clearInterval(intervalID);
+				stopStopwatch();
 			}
 		}, 1000);
 	}
@@ -41,29 +62,14 @@ import '../styles/stopwatch.css';
 
 	socket.on('start-stopwatch', (startingStopwatchId, twoWaves, time) => {
 		if (startingStopwatchId === stopwatchId) {
-			waveDiv.innerText = twoWaves ? 'AB' : '-';
-			isTwoWaves = twoWaves;
-
-			countdownTime = time;
-			countdown('time', countdownTime);
-
+			startStopwatch(time, twoWaves);
 			socket.emit('stopwatch-started', stopwatchId);
 		}
 	});
 
 	socket.on('stop-stopwatch', (stoppingStopwatchId) => {
 		if (stoppingStopwatchId === stopwatchId) {
-			if (isTwoWaves) {
-				waveDiv.innerText = 'CD';
-				countdown('time', countdownTime);
-				socket.emit('stopwatch-stopped', stopwatchId, true);
-				isTwoWaves = false;
-			} else {
-				clearInterval(intervalID);
-				waveDiv.innerText = '---';
-				timeDiv.innerText = '---';
-				socket.emit('stopwatch-stopped', stopwatchId, false);
-			}
+			stopStopwatch();
 		}
 	});
 </script>
