@@ -45,7 +45,7 @@ import '../styles/controller.css';
 		startStopwatchButton.disabled = true;
 	});
 
-	socket.on('stopwatch-started', (startingStopwatchId) => {
+	socket.on('stopwatch-started', (startingStopwatchId: string) => {
 		if (startingStopwatchId === stopwatchId) {
 			startStopwatchButton.disabled = false;
 			startStopwatchForm.hidden = true;
@@ -58,7 +58,7 @@ import '../styles/controller.css';
 		stopStopwatchButton.disabled = true;
 	});
 
-	socket.on('stopwatch-stopped', (stoppingStopwatchId, waveTwoRunning) => {
+	socket.on('stopwatch-stopped', (stoppingStopwatchId: string, waveTwoRunning: boolean) => {
 		if (stoppingStopwatchId === stopwatchId) {
 			stopStopwatchButton.disabled = false;
 
