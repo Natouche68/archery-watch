@@ -12,20 +12,41 @@ import '../styles/stopwatch.css';
 <script>
 	import { io } from 'socket.io-client';
 
+	function countdown(id: string, start: number) {
+		clearInterval(intervalID);
+
+		const counter = document.getElementById(id) as HTMLDivElement;
+		let count = start;
+		counter.innerText = String(count);
+
+		intervalID = setInterval(() => {
+			count -= 1;
+			counter.innerText = String(count);
+			if (count === 0) {
+				clearInterval(intervalID);
+			}
+		}, 1000);
+	}
+
 	const waveDiv = document.getElementById('wave') as HTMLDivElement;
 	const timeDiv = document.getElementById('time') as HTMLDivElement;
 
 	const socket = io(import.meta.env.PUBLIC_WEBSOCKET_SERVER);
 	const stopwatchId = 'stopwatch-1234'; // PLACEHOLDER
 	let isTwoWaves = false;
+	let countdownTime: number;
+	let intervalID: number;
 
 	socket.emit('stopwatch-connected');
 
 	socket.on('start-stopwatch', (startingStopwatchId, twoWaves, time) => {
 		if (startingStopwatchId === stopwatchId) {
 			waveDiv.innerText = twoWaves ? 'AB' : '-';
-			timeDiv.innerText = time;
 			isTwoWaves = twoWaves;
+
+			countdownTime = time;
+			countdown('time', countdownTime);
+
 			socket.emit('stopwatch-started', stopwatchId);
 		}
 	});
@@ -34,9 +55,11 @@ import '../styles/stopwatch.css';
 		if (stoppingStopwatchId === stopwatchId) {
 			if (isTwoWaves) {
 				waveDiv.innerText = 'CD';
+				countdown('time', countdownTime);
 				socket.emit('stopwatch-stopped', stopwatchId, true);
 				isTwoWaves = false;
 			} else {
+				clearInterval(intervalID);
 				waveDiv.innerText = '---';
 				timeDiv.innerText = '---';
 				socket.emit('stopwatch-stopped', stopwatchId, false);
