@@ -13,7 +13,7 @@ import '../styles/stopwatch.css';
 	import { io } from 'socket.io-client';
 
 	function startStopwatch(time: number, twoWaves: boolean): void {
-		waveDiv.innerText = twoWaves ? 'AB' : '-';
+		waveDiv.innerText = twoWaves ? startingWave : '-';
 		isTwoWaves = twoWaves;
 
 		countdownTime = time;
@@ -23,7 +23,8 @@ import '../styles/stopwatch.css';
 	function stopStopwatch(): void {
 		if (isTwoWaves) {
 			startStopwatch(countdownTime, false);
-			waveDiv.innerText = 'CD';
+			waveDiv.innerText = startingWave === 'AB' ? 'CD' : 'AB';
+			startingWave = startingWave === 'AB' ? 'CD' : 'AB';
 			socket.emit('stopwatch-stopped', stopwatchId, true);
 		} else {
 			clearInterval(intervalID);
@@ -57,6 +58,7 @@ import '../styles/stopwatch.css';
 	let isTwoWaves: boolean = false;
 	let countdownTime: number;
 	let intervalID: number;
+	let startingWave: 'AB' | 'CD' = 'AB';
 
 	socket.emit('stopwatch-connected');
 
