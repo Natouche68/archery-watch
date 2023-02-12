@@ -5,6 +5,7 @@ import '../styles/stopwatch.css';
 
 <BaseLayout>
 	<h1>Chronomètre</h1>
+	<div id='stopwatch-id'></div>
 	<div id='time'>---</div>
 	<div id='wave'>---</div>
 </BaseLayout>
@@ -54,15 +55,23 @@ import '../styles/stopwatch.css';
 
 	const waveDiv = document.getElementById('wave') as HTMLDivElement;
 	const timeDiv = document.getElementById('time') as HTMLDivElement;
+	const stopwatchIdDiv = document.getElementById('stopwatch-id') as HTMLDivElement;
 
 	const socket = io(import.meta.env.PUBLIC_WEBSOCKET_SERVER);
-	const stopwatchId = 'stopwatch-1234'; // PLACEHOLDER
+	let stopwatchId: string;
 	let isTwoWaves: boolean = false;
 	let countdownTime: number;
 	let intervalID: number;
 	let startingWave: 'AB' | 'CD' = 'AB';
 
-	socket.emit('stopwatch-connected');
+	timeDiv.hidden = true;
+	waveDiv.hidden = true;
+
+	socket.on('connect', () => {
+		socket.emit('stopwatch-connected');
+		stopwatchId = socket.id;
+		stopwatchIdDiv.innerText = stopwatchId;
+	});
 
 	socket.on('start-stopwatch', (startingStopwatchId: string, twoWaves: boolean, time: number) => {
 		if (startingStopwatchId === stopwatchId) {
@@ -77,6 +86,14 @@ import '../styles/stopwatch.css';
 	socket.on('stop-stopwatch', (stoppingStopwatchId: string) => {
 		if (stoppingStopwatchId === stopwatchId) {
 			stopStopwatch();
+		}
+	});
+
+	socket.on('controller-connected', (connectingStopwatchId: string) => {
+		if (connectingStopwatchId === stopwatchId) {
+			timeDiv.hidden = false;
+			waveDiv.hidden = false;
+			stopwatchIdDiv.hidden = true;
 		}
 	});
 </script>
