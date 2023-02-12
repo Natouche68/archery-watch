@@ -17,7 +17,9 @@ import '../styles/stopwatch.css';
 		isTwoWaves = twoWaves;
 
 		countdownTime = time;
-		countdown('time', countdownTime);
+		countdown('time', 10, () => {
+			countdown('time', countdownTime, stopStopwatch);
+		});
 	}
 
 	function stopStopwatch(): void {
@@ -34,7 +36,7 @@ import '../styles/stopwatch.css';
 		}
 	}
 
-	function countdown(id: string, start: number): void {
+	function countdown(id: string, start: number, whenCountdownFinish: () => void): void {
 		clearInterval(intervalID);
 
 		const counter = document.getElementById(id) as HTMLDivElement;
@@ -45,7 +47,8 @@ import '../styles/stopwatch.css';
 			count -= 1;
 			counter.innerText = String(count);
 			if (count === 0) {
-				stopStopwatch();
+				whenCountdownFinish();
+				// stopStopwatch();
 			}
 		}, 1000);
 	}
