@@ -48,7 +48,6 @@ import '../styles/stopwatch.css';
 			counter.innerText = String(count);
 			if (count === 0) {
 				whenCountdownFinish();
-				// stopStopwatch();
 			}
 		}, 1000);
 	}
@@ -67,6 +66,9 @@ import '../styles/stopwatch.css';
 
 	socket.on('start-stopwatch', (startingStopwatchId: string, twoWaves: boolean, time: number) => {
 		if (startingStopwatchId === stopwatchId) {
+			if (!twoWaves) {
+				startingWave = 'AB';
+			}
 			startStopwatch(time, twoWaves);
 			socket.emit('stopwatch-started', stopwatchId);
 		}
