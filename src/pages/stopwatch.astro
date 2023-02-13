@@ -4,11 +4,13 @@ import '../styles/stopwatch.css';
 ---
 
 <BaseLayout>
-	<h1>Chronomètre</h1>
-	<div id='stopwatch-id'></div>
-	<canvas id='qrcode'></canvas>
-	<div id='time'>---</div>
-	<div id='wave'>---</div>
+	<div id='stopwatch'>
+		<h1 id='title'>Chronomètre</h1>
+		<div id='stopwatch-id'></div>
+		<canvas id='qrcode'></canvas>
+		<div id='time'>-</div>
+		<div id='wave'></div>
+	</div>
 </BaseLayout>
 
 <script>
@@ -16,16 +18,19 @@ import '../styles/stopwatch.css';
 	import { toCanvas } from 'qrcode';
 
 	function startStopwatch(time: number, twoWaves: boolean): void {
-		waveDiv.innerText = twoWaves ? startingWave : '-';
+		waveDiv.innerText = twoWaves ? startingWave : '';
 		isTwoWaves = twoWaves;
 
 		countdownTime = time;
+		stopwatchContainer.className = 'red';
 		countdown('time', 10, () => {
+			stopwatchContainer.className = 'green';
 			countdown('time', countdownTime, stopStopwatch);
 		});
 	}
 
 	function stopStopwatch(): void {
+		stopwatchContainer.className = 'red';
 		if (isTwoWaves) {
 			startStopwatch(countdownTime, false);
 			waveDiv.innerText = startingWave === 'AB' ? 'CD' : 'AB';
@@ -33,8 +38,7 @@ import '../styles/stopwatch.css';
 			socket.emit('stopwatch-stopped', stopwatchId, true);
 		} else {
 			clearInterval(intervalID);
-			waveDiv.innerText = '---';
-			timeDiv.innerText = '---';
+			timeDiv.innerText = '-';
 			socket.emit('stopwatch-stopped', stopwatchId, false);
 		}
 	}
@@ -46,15 +50,22 @@ import '../styles/stopwatch.css';
 		let count: number = start;
 		counter.innerText = String(count);
 
+		if (stopwatchContainer.className === 'green' && count <= 30) {
+			stopwatchContainer.className = 'yellow';
+		}
+
 		intervalID = setInterval(() => {
 			count -= 1;
 			counter.innerText = String(count);
 			if (count === 0) {
 				whenCountdownFinish();
+			} else if (stopwatchContainer.className === 'green' && count <= 30) {
+				stopwatchContainer.className = 'yellow';
 			}
 		}, 1000);
 	}
 
+	const stopwatchContainer = document.getElementById('stopwatch') as HTMLDivElement;
 	const waveDiv = document.getElementById('wave') as HTMLDivElement;
 	const timeDiv = document.getElementById('time') as HTMLDivElement;
 	const stopwatchIdDiv = document.getElementById('stopwatch-id') as HTMLDivElement;
@@ -99,8 +110,15 @@ import '../styles/stopwatch.css';
 		if (connectingStopwatchId === stopwatchId) {
 			timeDiv.hidden = false;
 			waveDiv.hidden = false;
+
 			stopwatchIdDiv.hidden = true;
 			qrcodeCanvas.hidden = true;
+
+			const titleElement = document.getElementById('title') as HTMLHeadingElement;
+			titleElement.innerText = '';
+			titleElement.id = '';
+
+			stopwatchContainer.className = 'red';
 		}
 	});
 </script>
