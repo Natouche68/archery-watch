@@ -4,12 +4,14 @@ import '../styles/controller.css';
 ---
 
 <BaseLayout>
-	<h1>Connecter une télécommande</h1>
-	<div>
-		<label for='stopwatch-id-input'>ID du chronomètre</label>
-		<input type='text' id='stopwatch-id-input' />
+	<div class='controller'>
+		<h1 class='title'>Connecter une télécommande</h1>
+		<div>
+			<label for='stopwatch-id-input' class='label'>ID du chronomètre</label>
+			<input type='text' id='stopwatch-id-input' class='input' autofocus />
+		</div>
+		<a href='#' id='connect-to-stopwatch' class='button'>Se connecter</a>
 	</div>
-	<a href='#' id='connect-to-stopwatch'>Se connecter</a>
 </BaseLayout>
 
 <script>

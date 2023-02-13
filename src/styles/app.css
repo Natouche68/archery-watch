@@ -3,9 +3,12 @@
 :root {
 	--primary-color: #00c80a;
 	--secondary-color: #009e08;
+	--light-gray: #a2a2a2;
 }
 
-body {
+body,
+input,
+button {
 	margin: 0;
 	padding: 0;
 	font-family: Poppins, sans-serif;
