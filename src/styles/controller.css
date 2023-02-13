@@ -36,6 +36,7 @@
 }
 
 .button {
+	border: none;
 	margin: 32px 0;
 	width: 100%;
 	height: 64px;
@@ -54,4 +55,43 @@
 .button:hover {
 	border-radius: 32px;
 	background: var(--secondary-color);
+}
+
+.button:disabled {
+	border-radius: 0;
+	background: var(--light-gray);
+}
+
+.checkbox-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.checkbox-container .label {
+	font-size: 18px;
+	padding-left: 12px;
+}
+
+.checkbox-input {
+	visibility: hidden;
+	width: 0;
+}
+
+.checkbox {
+	padding: 0;
+	display: inline-block;
+	height: 24px;
+	width: 24px;
+	border: 4px solid var(--light-gray);
+	border-radius: 10px;
+	transition: all 0.4s ease;
+}
+
+.checkbox-input:checked ~ .checkbox {
+	width: 8px;
+	height: 8px;
+	border: 12px solid var(--primary-color);
 }

@@ -6,19 +6,26 @@ const { stopwatchId } = Astro.params;
 ---
 
 <BaseLayout>
-	<h1>Télécommande</h1>
-	<form id='start-stopwatch' data-stopwatch-id={stopwatchId}>
-		<div>
-			<input type='checkbox' id='two-waves' />
-			<label for='two-waves'>Deux vagues (AB/CD) ?</label>
+	<div class='controller'>
+		<h1 class='title'>Télécommande</h1>
+		<form id='start-stopwatch' data-stopwatch-id={stopwatchId}>
+			<div class='checkbox-container'>
+				<input type='checkbox' id='two-waves' class='checkbox-input' />
+				<span class='checkbox'></span>
+				<label for='two-waves' class='label'>Deux vagues (AB/CD) ?</label>
+			</div>
+			<div>
+				<label for='time' class='label'>Temps</label>
+				<input type='number' id='time' step='10' min='10' required class='input' />
+			</div>
+			<button id='start-stopwatch-button' class='button' style='height: 96px;'
+				>Commencer le chronomètre</button
+			>
+		</form>
+		<div id='stop-stopwatch-container'>
+			<button id='stop-stopwatch' class='button'>Stopper le chronomètre</button>
 		</div>
-		<div>
-			<label for='time'>Temps</label>
-			<input type='number' id='time' step='10' min='10' required />
-		</div>
-		<button id='start-stopwatch-button'>Commencer le chronomètre</button>
-	</form>
-	<button id='stop-stopwatch'>Stopper le chronomètre</button>
+	</div>
 </BaseLayout>
 
 <script>
@@ -26,6 +33,9 @@ const { stopwatchId } = Astro.params;
 
 	const startStopwatchForm = document.getElementById('start-stopwatch') as HTMLFormElement;
 	const stopStopwatchButton = document.getElementById('stop-stopwatch') as HTMLButtonElement;
+	const stopStopwatchContainer = document.getElementById(
+		'stop-stopwatch-container'
+	) as HTMLDivElement;
 
 	const startStopwatchButton = document.getElementById(
 		'start-stopwatch-button'
@@ -37,9 +47,11 @@ const { stopwatchId } = Astro.params;
 	const socket = io(import.meta.env.PUBLIC_WEBSOCKET_SERVER);
 	const stopwatchId = startStopwatchForm.dataset.stopwatchId;
 
-	stopStopwatchButton.hidden = true;
+	stopStopwatchContainer.hidden = true;
 
-	socket.emit('controller-connected', stopwatchId);
+	socket.on('connect', () => {
+		socket.emit('controller-connected', stopwatchId);
+	});
 
 	startStopwatchForm.addEventListener('submit', (event) => {
 		event.preventDefault();
@@ -51,7 +63,7 @@ const { stopwatchId } = Astro.params;
 		if (startingStopwatchId === stopwatchId) {
 			startStopwatchButton.disabled = false;
 			startStopwatchForm.hidden = true;
-			stopStopwatchButton.hidden = false;
+			stopStopwatchContainer.hidden = false;
 		}
 	});
 
@@ -65,7 +77,7 @@ const { stopwatchId } = Astro.params;
 			stopStopwatchButton.disabled = false;
 
 			if (!waveTwoRunning) {
-				stopStopwatchButton.hidden = true;
+				stopStopwatchContainer.hidden = true;
 				startStopwatchForm.hidden = false;
 			}
 		}
