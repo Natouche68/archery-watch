@@ -108,6 +108,9 @@ import '../styles/stopwatch.css';
 
 	socket.on('controller-connected', (connectingStopwatchId: string) => {
 		if (connectingStopwatchId === stopwatchId) {
+			document.documentElement.requestFullscreen();
+			stopwatchContainer.className = 'red';
+
 			timeDiv.hidden = false;
 			waveDiv.hidden = false;
 
@@ -117,8 +120,6 @@ import '../styles/stopwatch.css';
 			const titleElement = document.getElementById('title') as HTMLHeadingElement;
 			titleElement.innerText = '';
 			titleElement.id = '';
-
-			stopwatchContainer.className = 'red';
 		}
 	});
 </script>
