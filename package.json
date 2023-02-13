@@ -12,6 +12,10 @@
   },
   "dependencies": {
     "astro": "^2.0.6",
+    "qrcode": "^1.5.1",
     "socket.io-client": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.0"
   }
 }

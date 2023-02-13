@@ -6,12 +6,14 @@ import '../styles/stopwatch.css';
 <BaseLayout>
 	<h1>Chronomètre</h1>
 	<div id='stopwatch-id'></div>
+	<canvas id='qrcode'></canvas>
 	<div id='time'>---</div>
 	<div id='wave'>---</div>
 </BaseLayout>
 
 <script>
 	import { io } from 'socket.io-client';
+	import { toCanvas } from 'qrcode';
 
 	function startStopwatch(time: number, twoWaves: boolean): void {
 		waveDiv.innerText = twoWaves ? startingWave : '-';
@@ -56,12 +58,13 @@ import '../styles/stopwatch.css';
 	const waveDiv = document.getElementById('wave') as HTMLDivElement;
 	const timeDiv = document.getElementById('time') as HTMLDivElement;
 	const stopwatchIdDiv = document.getElementById('stopwatch-id') as HTMLDivElement;
+	const qrcodeCanvas = document.getElementById('qrcode') as HTMLCanvasElement;
 
 	const socket = io(import.meta.env.PUBLIC_WEBSOCKET_SERVER);
 	let stopwatchId: string;
 	let isTwoWaves: boolean = false;
 	let countdownTime: number;
-	let intervalID: number;
+	let intervalID: number | NodeJS.Timer;
 	let startingWave: 'AB' | 'CD' = 'AB';
 
 	timeDiv.hidden = true;
@@ -71,6 +74,9 @@ import '../styles/stopwatch.css';
 		socket.emit('stopwatch-connected');
 		stopwatchId = socket.id;
 		stopwatchIdDiv.innerText = stopwatchId;
+		toCanvas(qrcodeCanvas, `${location.protocol}//${location.host}/controller/${stopwatchId}`, {
+			scale: 12,
+		});
 	});
 
 	socket.on('start-stopwatch', (startingStopwatchId: string, twoWaves: boolean, time: number) => {
@@ -94,6 +100,7 @@ import '../styles/stopwatch.css';
 			timeDiv.hidden = false;
 			waveDiv.hidden = false;
 			stopwatchIdDiv.hidden = true;
+			qrcodeCanvas.hidden = true;
 		}
 	});
 </script>
