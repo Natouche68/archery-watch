@@ -23,8 +23,19 @@ import '../styles/stopwatch.css';
 
 		countdownTime = time;
 		stopwatchContainer.className = 'red';
+
+		whistleSound.play();
+		let whistleSoundPlayed: number = 1;
+		whistleSound.addEventListener('ended', () => {
+			if (whistleSoundPlayed === 1) {
+				whistleSound.play();
+				whistleSoundPlayed++;
+			}
+		});
+
 		countdown('time', 10, () => {
 			stopwatchContainer.className = 'green';
+			whistleSound.play();
 			countdown('time', countdownTime, stopStopwatch);
 		});
 	}
@@ -39,6 +50,16 @@ import '../styles/stopwatch.css';
 		} else {
 			clearInterval(intervalID);
 			timeDiv.innerText = '-';
+
+			whistleSound.play();
+			let whistleSoundPlayed: number = 1;
+			whistleSound.addEventListener('ended', () => {
+				if (whistleSoundPlayed === 1 || whistleSoundPlayed === 2) {
+					whistleSound.play();
+					whistleSoundPlayed++;
+				}
+			});
+
 			socket.emit('stopwatch-stopped', stopwatchId, false);
 		}
 	}
@@ -77,6 +98,8 @@ import '../styles/stopwatch.css';
 	let countdownTime: number;
 	let intervalID: number | NodeJS.Timer;
 	let startingWave: 'AB' | 'CD' = 'AB';
+
+	const whistleSound = new Audio('whistle.wav');
 
 	timeDiv.hidden = true;
 	waveDiv.hidden = true;
