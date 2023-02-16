@@ -4,20 +4,23 @@
 	justify-content: space-between;
 	align-items: center;
 	height: calc(100vh - 64px);
-	padding: 32px 0;
+	padding: 32px 64px;
 	background: #fff;
 	transition: all 0.4s ease;
 }
 
 #stopwatch.green {
+	flex-direction: row-reverse;
 	background: var(--green);
 }
 
 #stopwatch.yellow {
+	flex-direction: row-reverse;
 	background: var(--yellow);
 }
 
 #stopwatch.red {
+	flex-direction: row-reverse;
 	background: var(--red);
 }
 
@@ -37,13 +40,13 @@
 }
 
 #time {
-	font-size: 156px;
+	font-size: 456px;
 	font-weight: 700;
 	color: #fff;
 }
 
 #wave {
-	font-size: 84px;
+	font-size: 204px;
 	font-weight: 500;
 	color: #fff;
 }
