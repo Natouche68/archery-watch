@@ -106,11 +106,13 @@ import '../styles/stopwatch.css';
 
 	socket.on('connect', () => {
 		socket.emit('stopwatch-connected');
-		stopwatchId = socket.id;
-		stopwatchIdDiv.innerText = stopwatchId;
-		toCanvas(qrcodeCanvas, `${location.protocol}//${location.host}/controller/${stopwatchId}`, {
-			scale: 12,
-		});
+		if (!stopwatchId) {
+			stopwatchId = socket.id;
+			stopwatchIdDiv.innerText = stopwatchId;
+			toCanvas(qrcodeCanvas, `${location.protocol}//${location.host}/controller/${stopwatchId}`, {
+				scale: 12,
+			});
+		}
 	});
 
 	socket.on('start-stopwatch', (startingStopwatchId: string, twoWaves: boolean, time: number) => {
