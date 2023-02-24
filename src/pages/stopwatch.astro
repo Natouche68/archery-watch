@@ -98,6 +98,7 @@ import '../styles/stopwatch.css';
 	let countdownTime: number;
 	let intervalID: number | NodeJS.Timer;
 	let startingWave: 'AB' | 'CD' = 'AB';
+	let controllerConnected: boolean = false;
 
 	const whistleSound = new Audio('whistle.wav');
 
@@ -132,7 +133,9 @@ import '../styles/stopwatch.css';
 	});
 
 	socket.on('controller-connected', (connectingStopwatchId: string) => {
-		if (connectingStopwatchId === stopwatchId) {
+		if (connectingStopwatchId === stopwatchId && !controllerConnected) {
+			controllerConnected = true;
+
 			document.documentElement.requestFullscreen();
 			stopwatchContainer.className = 'red';
 
